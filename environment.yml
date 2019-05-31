@@ -3,4 +3,4 @@ channels:
   - conda-forge
 dependencies:
   - netcdf4
-  - pulp
+  - scipy
