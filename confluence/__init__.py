@@ -13,7 +13,7 @@ def read_file(ncfile):
     with netcdf.Dataset(ncfile) as f:
         rt = f.groups['Reach_Timeseries']
         Q = rt.variables['Q'][:]
-        W= rt.variables['W'][:]
+        W = rt.variables['W'][:]
         H = rt.variables['H'][:]
     return Q, H, W
 

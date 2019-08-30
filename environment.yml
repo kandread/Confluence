@@ -3,4 +3,6 @@ channels:
   - conda-forge
 dependencies:
   - netcdf4
-  - pulp
+  - scipy
+  - numpy
+  - docker-py

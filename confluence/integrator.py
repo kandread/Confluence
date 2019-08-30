@@ -20,13 +20,12 @@ class MeanFlow:
 
     def objective(self, x):
         """Objective function for mean-flow integration."""
-        n = np.array(x[1:self.nreaches * 2:2])
-        A0 = np.array(x[0:self.nreaches * 2:2])
+        n = np.array(x[1::2])
+        A0 = np.array(x[0::2])
         H, W, S, A = self.data
         w = np.mean(W, axis=0)
         h = np.mean(H, axis=0)
-        dA = np.array([(w[r] + W[np.argmin(A[:, r]), r]) / 2 *
-                       (h[r] - H[np.argmin(A[:, r]), r])
+        dA = np.array([(w[r] + W[np.argmin(A[:, r]), r]) / 2 * (h[r] - H[np.argmin(A[:, r]), r])
                        for r in range(self.nreaches)]).T
         Q0 = 1 / self.n * (self.A0 + dA)**(5 / 3) * w**(-2 / 3) * np.mean(
             S, axis=0)**(1 / 2)
@@ -41,8 +40,7 @@ class MeanFlow:
         H, W, S, A = self.data
         w = np.mean(W, axis=0)
         h = np.mean(H, axis=0)
-        dA = np.array([(w[r] + W[np.argmin(A[:, r]), r]) / 2 *
-                       (h[r] - H[np.argmin(A[:, r]), r])
+        dA = np.array([(w[r] + W[np.argmin(A[:, r]), r]) / 2 * (h[r] - H[np.argmin(A[:, r]), r])
                        for r in range(self.nreaches)]).T
         Q = 1 / n * (A0 + dA)**(5 / 3) * w**(-2 / 3) * np.mean(S,
                                                                axis=0)**(1 / 2)
