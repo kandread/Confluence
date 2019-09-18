@@ -12,21 +12,22 @@ import numpy as np
 class MeanFlow:
     """Mean flow discharge integrator."""
 
-    def __init__(self, n, A0, H, W, S, A, downstream):
+    def __init__(self, n, A0, H, W, S, A, dA, downstream):
         self.nreaches = len(A0)
         self.A0 = np.array(A0)
         self.n = np.array(n)
-        self.data = (H, W, S, A)
+        self.data = (H, W, S, A, dA)
 
     def objective(self, x):
         """Objective function for mean-flow integration."""
         n = np.array(x[1::2])
         A0 = np.array(x[0::2])
-        H, W, S, A = self.data
+        H, W, S, A, dA = self.data
         w = np.mean(W, axis=0)
         h = np.mean(H, axis=0)
-        dA = np.array([(w[r] + W[np.argmin(A[:, r]), r]) / 2 * (h[r] - H[np.argmin(A[:, r]), r])
-                       for r in range(self.nreaches)]).T
+        if dA is None:
+            dA = np.array([(w[r] + W[np.argmin(A[:, r]), r]) / 2 * (h[r] - H[np.argmin(A[:, r]), r])
+                           for r in range(self.nreaches)]).T
         Q0 = 1 / self.n * (self.A0 + dA)**(5 / 3) * w**(-2 / 3) * np.mean(
             S, axis=0)**(1 / 2)
         Q = 1 / n * (A0 + dA)**(5 / 3) * w**(-2 / 3) * np.mean(S,
@@ -37,11 +38,12 @@ class MeanFlow:
         """Constrain discharge to increase downstream."""
         n = np.array(x[1::2])
         A0 = np.array(x[0::2])
-        H, W, S, A = self.data
+        H, W, S, A, dA = self.data
         w = np.mean(W, axis=0)
         h = np.mean(H, axis=0)
-        dA = np.array([(w[r] + W[np.argmin(A[:, r]), r]) / 2 * (h[r] - H[np.argmin(A[:, r]), r])
-                       for r in range(self.nreaches)]).T
+        if dA is None:
+            dA = np.array([(w[r] + W[np.argmin(A[:, r]), r]) / 2 * (h[r] - H[np.argmin(A[:, r]), r])
+                           for r in range(self.nreaches)]).T
         Q = 1 / n * (A0 + dA)**(5 / 3) * w**(-2 / 3) * np.mean(S,
                                                                axis=0)**(1 / 2)
         return Q[i] - Q[i + 1]
