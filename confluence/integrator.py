@@ -28,6 +28,8 @@ class MeanFlow:
         if dA is None:
             dA = np.array([(w[r] + W[np.argmin(A[:, r]), r]) / 2 * (h[r] - H[np.argmin(A[:, r]), r])
                            for r in range(self.nreaches)]).T
+        else:
+            dA = np.mean(dA, axis=0)
         Q0 = 1 / self.n * (self.A0 + dA)**(5 / 3) * w**(-2 / 3) * np.mean(
             S, axis=0)**(1 / 2)
         Q = 1 / n * (A0 + dA)**(5 / 3) * w**(-2 / 3) * np.mean(S,
@@ -44,6 +46,8 @@ class MeanFlow:
         if dA is None:
             dA = np.array([(w[r] + W[np.argmin(A[:, r]), r]) / 2 * (h[r] - H[np.argmin(A[:, r]), r])
                            for r in range(self.nreaches)]).T
+        else:
+            dA = np.mean(dA, axis=0)
         Q = 1 / n * (A0 + dA)**(5 / 3) * w**(-2 / 3) * np.mean(S,
                                                                axis=0)**(1 / 2)
         return Q[i] - Q[i + 1]
