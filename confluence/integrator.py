@@ -26,11 +26,11 @@ def write(ncfile, Ab, n):
 class MeanFlow:
     """Mean flow discharge integrator."""
 
-    def __init__(self, n, A0, H, W, S, A, dA, routing_table):
+    def __init__(self, n, A0, H, W, S, dA, routing_table):
         self.nreaches = len(A0)
         self.A0 = np.array(A0)
         self.n = np.array(n)
-        self.data = (H, W, S, A, dA)
+        self.data = (H, W, S, dA)
         self.rivs = self._riverTopology(routing_table)
 
     def _riverTopology(self, routing_table):
@@ -38,7 +38,7 @@ class MeanFlow:
         a dictionary with each entry being a list of upstream reaches for
         the specific reach."""
         rout = pd.read_csv(routing_table)
-        rout = rout.dropna(axis=0)[['GridID', 'HydroID', 'NextDownID']]
+        rout = rout.dropna(axis=1)[['GridID', 'HydroID', 'NextDownID']]
         rivs = {k: [] for k in rout['GridID']}
         hyd = {row[1]['HydroID']: row[1]['GridID'] for row in rout.iterrows()}
         for row in rout.iterrows():
@@ -52,11 +52,11 @@ class MeanFlow:
         """Objective function for mean-flow integration."""
         n = np.array(x[1::2])
         A0 = np.array(x[0::2])
-        H, W, S, A, dA = self.data
+        H, W, S, dA = self.data
         w = np.mean(W, axis=0)
         h = np.mean(H, axis=0)
         if dA is None:
-            dA = np.array([(w[r] + W[np.argmin(A[:, r]), r]) / 2 * (h[r] - H[np.argmin(A[:, r]), r])
+            dA = np.array([(w[r] + W[np.argmin(H[:, r]), r]) / 2 * (h[r] - H[np.argmin(H[:, r]), r])
                            for r in range(self.nreaches)]).T
         else:
             dA = np.mean(dA, axis=0)
@@ -69,11 +69,11 @@ class MeanFlow:
         """Constrain discharge to increase downstream."""
         n = np.array(x[1::2])
         A0 = np.array(x[0::2])
-        H, W, S, A, dA = self.data
+        H, W, S, dA = self.data
         w = np.mean(W, axis=0)
         h = np.mean(H, axis=0)
         if dA is None:
-            dA = np.array([(w[r] + W[np.argmin(A[:, r]), r]) / 2 * (h[r] - H[np.argmin(A[:, r]), r])
+            dA = np.array([(w[r] + W[np.argmin(H[:, r]), r]) / 2 * (h[r] - H[np.argmin(H[:, r]), r])
                            for r in range(self.nreaches)]).T
         else:
             dA = np.mean(dA, axis=0)
