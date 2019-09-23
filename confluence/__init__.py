@@ -5,18 +5,15 @@ SWOT-estimated discharge.
 
 """
 
-import netCDF4 as netcdf
+import numpy as np
 
 
-def read_file(ncfile):
-    """Read reach time series data from NetCDF file."""
-    with netcdf.Dataset(ncfile) as f:
-        rt = f.groups['Reach_Timeseries']
-        Q = rt.variables['Q'][:]
-        W = rt.variables['W'][:]
-        H = rt.variables['H'][:]
-    return Q, H, W
-
-
-def integrate(Q):
-    """Apply integrator algorithms to estimated discharge."""
+def removeFlagged(H, W, S):
+    """Clean up data."""
+    i = np.where(np.all(H > -1000), axis=1)
+    H = H[i, :]
+    i = np.where(np.all(W > -1000), axis=1)
+    W = W[i, :]
+    i = np.where(np.all(S > -1000), axis=1)
+    S = S[i, :]
+    return H, W, S
