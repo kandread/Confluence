@@ -47,11 +47,10 @@ class MeanFlow:
                            for r in range(self.nreaches)]).T
         else:
             dA = np.mean(dA, axis=0)
-        Q0 = 1 / self.n * (self.A0 + dA)**(5 / 3) * w**(-2 / 3) * np.mean(
-            S, axis=0)**(1 / 2)
         Q = 1 / n * (A0 + dA)**(5 / 3) * w**(-2 / 3) * np.mean(S,
                                                                axis=0)**(1 / 2)
-        return np.sum((Q - np.mean(Q0))**2)
+        error = [np.sqrt((Q[i] - np.sum(Q[j] for j in self.rivs[i]))**2) for i in self.rivs]
+        return np.sum(error)
 
     def constraint(self, i, x):
         """Constrain discharge to increase downstream."""
@@ -67,7 +66,7 @@ class MeanFlow:
             dA = np.mean(dA, axis=0)
         Q = 1 / n * (A0 + dA)**(5 / 3) * w**(-2 / 3) * np.mean(S,
                                                                axis=0)**(1 / 2)
-        return Q[i] - Q[i + 1]
+        return Q[i] - np.sum([Q[j] for j in self.rivs[i]])
 
     def integrate(self):
         """Integrate discharge by forcing mean annual
