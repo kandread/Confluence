@@ -8,6 +8,19 @@ from functools import partial
 from scipy.optimize import minimize
 import numpy as np
 import pandas as pd
+import shutil
+import netCDF4 as netcdf
+
+
+def write(ncfile, Ab, n):
+    """Make copy of input file and write with estimated parameters."""
+    shutil.copyfile(ncfile, "integrator.nc")
+    f = netcdf.Dataset("integrator.nc", 'r+')
+    Abv = f.variables['Abase']
+    Abv[:] = Ab
+    nv = f.variables['n']
+    nv[:] = n
+    f.close()
 
 
 class MeanFlow:
