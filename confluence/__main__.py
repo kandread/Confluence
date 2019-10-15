@@ -9,13 +9,13 @@ def main(ncfile, routing_table):
     H = f.variables['H'][:].data
     W = f.variables['W'][:].data
     S = f.variables['S'][:].data
-    H, W, S = removeFlagged(H, W, S)
     n = f.variables['n'][:].data
     Ab = f.variables['Abase'][:].data
     if 'dA' in f.variables:
         dA = f.variables['dA'][:].data
     else:
         dA = None
+    H, W, S, dA = removeFlagged(H, W, S, dA)
     mf = integrator.MeanFlow(n, Ab, H, W, S, dA, routing_table)
     Ab_est, n_est = mf.integrate()
     integrator.write(ncfile, Ab_est, n_est)
