@@ -42,7 +42,7 @@ class MeanFlow:
         rivs = {k: [] for k in rout['GridID']}
         hyd = {row[1]['HydroID']: row[1]['GridID'] for row in rout.iterrows()}
         for row in rout.iterrows():
-            if row[1]['NextDownID'] > 0:
+            if row[1]['NextDownID'] > 0 and row[1]['NextDownID'] in hyd:
                 rivs[hyd[row[1]['NextDownID']]].append(hyd[row[1]['HydroID']])
         idx = {k: i for i, k in enumerate(rivs)}
         rivs = {i: [idx[l] for l in rivs[k]] for i, k in enumerate(rivs)}
