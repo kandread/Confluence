@@ -85,6 +85,7 @@ class MeanFlow:
         ubnds = [0.0] * (self.nreaches * 2)
         lbnds[1::2] = [0.01] * self.nreaches
         ubnds[1::2] = [0.09] * self.nreaches
+        lbnds[::2] = np.abs(np.amin(self.data[-1], axis=0))
         ubnds[::2] = [1e4] * self.nreaches
         bnds = list(zip(lbnds, ubnds))
         x0 = [0.0] * (self.nreaches * 2)
